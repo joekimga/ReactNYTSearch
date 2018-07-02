@@ -10,9 +10,9 @@ import { Input, TextArea, FormBtn } from "../../components/Form";
 class Articles extends Component {
   state = {
     articles: [],
-    title: "",
-    author: "",
-    synopsis: ""
+    retrieve: "",
+    startYear: "",
+    endYear: ""
   };
 
   componentDidMount() {
@@ -22,7 +22,7 @@ class Articles extends Component {
   loadArticles = () => {
     API.getArticles()
       .then(res =>
-        this.setState({ articles: res.data, title: "", author: "", synopsis: "" })
+        this.setState({ articles: res.data, retrieve: "", startYear: "", endYear: "" })
       )
       .catch(err => console.log(err));
   };
@@ -42,11 +42,11 @@ class Articles extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
+    if (this.state.retrieve && this.state.startYear) {
       API.saveArticle({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
+        retrieve: this.state.retrieve,
+        startYear: this.state.startYear,
+        endYear: this.state.endYear
       })
         .then(res => this.loadArticles())
         .catch(err => console.log(err));
@@ -59,29 +59,35 @@ class Articles extends Component {
         <Row>
           <Col size="md-6">
             <Jumbotron>
-              <h1>What Articles Should I Read?</h1>
+              <h1>Which Articles Should I Read?</h1>
             </Jumbotron>
             <form>
               <Input
-                value={this.state.title}
+                value={this.state.articles}
                 onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
+                name="articles"
+                placeholder="Search Term: (required)"
+              />            
+              <Input
+                value={this.state.retrieve}
+                onChange={this.handleInputChange}
+                name="retrieve"
+                placeholder="Number of Records to Retrieve: (required)"
               />
               <Input
-                value={this.state.author}
+                value={this.state.startYear}
                 onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
+                name="startYear"
+                placeholder="Start Year (Optional)"
               />
               <TextArea
-                value={this.state.synopsis}
+                value={this.state.endYear}
                 onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
+                name="endYear"
+                placeholder="End Year (Optional)"
               />
               <FormBtn
-                disabled={!(this.state.author && this.state.title)}
+                disabled={!(this.state.startYear && this.state.retrieve)}
                 onClick={this.handleFormSubmit}
               >
                 Submit Article
@@ -98,7 +104,7 @@ class Articles extends Component {
                   <ListItem key={article._id}>
                     <Link to={"/articles/" + article._id}>
                       <strong>
-                        {article.title} by {article.author}
+                        {article.retrieve} by {article.startYear}
                       </strong>
                     </Link>
                     <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
